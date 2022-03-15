@@ -9,7 +9,7 @@ as $$
     select null::search_.item where false
 $$;
 
--- abstract search.to_jsonb transforms an item into result
+-- abstract search.to_jsonb transforms an item to uniform type
 --
 create function search.to_jsonb(search_.item)
     returns jsonb

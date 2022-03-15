@@ -31,9 +31,9 @@ begin
     a.id = id_;
     a.table_t = coalesce(table_t_, a.table_t, (data_sch || '.' || a.id )::regclass);
     a.param_t = coalesce(param_t_, a.param_t, (code_sch || '.param_t')::regtype);
-    a.match_it = coalesce(match_it_, a.match_it, (code_sch || '.match__it')::regtype);
+    a.match_it = coalesce(match_it_, a.match_it, (code_sch || '.match_it')::regtype);
     a.param_f = coalesce(param_f_, a.param_f, (code_sch || '.get_param(' || a.table_t || ')')::regprocedure);
-    a.match_f = coalesce(match_f_, a.match_f, (code_sch || '.match(' || a.param_t ||',' || a.match_it|| ')')::regprocedure);
+    a.match_f = coalesce(match_f_, a.match_f, (code_sch || '.match(' || a.param_t ||',' || a.match_it || ')')::regprocedure);
     a.jsonb_f = coalesce(jsonb_f_, a.jsonb_f, (code_sch || '.to_jsonb(' || a.table_t || ')')::regprocedure);
 
     insert into search_.type values (a.*)
