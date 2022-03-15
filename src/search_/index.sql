@@ -6,8 +6,8 @@ create table search_.type (
     id text not null primary key,
 
     table_t regclass,
-    param_t regclass,
-    match_it regclass,
+    param_t regtype,
+    match_it regtype,
 
     param_f regprocedure, -- param_f(table_t) to set param
     match_f regprocedure, -- match_f(param_t, match_it) to match

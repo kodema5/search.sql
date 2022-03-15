@@ -174,8 +174,8 @@ create schema search;
         id_ => 'car',
 
         table_t_ => 'tests.car'::regclass,
-        param_t_  =>'tests.car_param_t'::regclass,
-        match_it_ =>'tests.car_match_it'::regclass,
+        param_t_  =>'tests.car_param_t'::regtype,
+        match_it_ =>'tests.car_match_it'::regtype,
 
         param_f_ =>'tests.get_param(tests.car)'::regprocedure,
         match_f_ =>'tests.match(tests.car_param_t,tests.car_match_it)'::regprocedure,
@@ -193,8 +193,8 @@ create schema search;
         id_ => 'book',
 
         table_t_ => 'tests.book'::regclass,
-        param_t_  =>'tests.book_param_t'::regclass,
-        match_it_ => 'tests.book_match_it'::regclass,
+        param_t_  =>'tests.book_param_t'::regtype,
+        match_it_ => 'tests.book_match_it'::regtype,
         code_sch => 'tests'
     );
 
