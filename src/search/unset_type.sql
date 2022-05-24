@@ -11,26 +11,26 @@ create procedure search.unset_type (
     security definer
 as $$
 declare
-    t search_.type;
+    t _search.type;
 begin
 
     select ts.*
     into t
-    from search_.type ts
+    from _search.type ts
     where id = id_;
 
     call search.unset_type_inheritance(t);
     call search.unset_type_param_trigger(t);
     call search.replace_get_fs();
 
-    delete from search_.type
+    delete from _search.type
     where id = id_;
 end;
 $$;
 
 
 create procedure search.unset_type_inheritance (
-    t search_.type
+    t _search.type
 )
     language plpgsql
     security definer
@@ -43,7 +43,7 @@ begin
     )
     then
         execute format('
-            alter table %s no inherit search_.item
+            alter table %s no inherit _search.item
         ', t.table_t);
     end if;
 end;
@@ -51,7 +51,7 @@ $$;
 
 
 create procedure search.unset_type_param_trigger (
-    t search_.type
+    t _search.type
 )
     language plpgsql
     security definer

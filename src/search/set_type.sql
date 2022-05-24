@@ -1,4 +1,4 @@
--- sets the type
+-- registers a table to be searched on
 -- registers the various types and function pointers needed for type
 -- ensures inheritance
 -- attach trigger to populate param column
@@ -7,8 +7,8 @@
 create procedure search.set_type (
     id_ text,
 
-    data_sch text default '',
-    code_sch text default '',
+    data_sch text default '', -- which schema data resides?
+    code_sch text default '', -- which schema code resides?
 
     table_t_ regclass default null,
     param_t_ regtype default null,
@@ -22,12 +22,17 @@ create procedure search.set_type (
     security definer
 as $$
 declare
-    a search_.type;
+    a _search.type;
 begin
-    select t into a
-    from search_.type t
+    -- get an existing type
+    --
+    select t
+        into a
+    from _search.type t
     where t.id = id_;
 
+    -- update or populate with existing
+    --
     a.id = id_;
     a.table_t = coalesce(table_t_, a.table_t, (data_sch || '.' || a.id )::regclass);
     a.param_t = coalesce(param_t_, a.param_t, (code_sch || '.param_t')::regtype);
@@ -36,7 +41,9 @@ begin
     a.match_f = coalesce(match_f_, a.match_f, (code_sch || '.match(' || a.param_t ||',' || a.match_it || ')')::regprocedure);
     a.jsonb_f = coalesce(jsonb_f_, a.jsonb_f, (code_sch || '.to_jsonb(' || a.table_t || ')')::regprocedure);
 
-    insert into search_.type values (a.*)
+    -- insert or update
+    --
+    insert into _search.type values (a.*)
     on conflict (id) do update set
         table_t = a.table_t,
         param_t = a.param_t,
@@ -47,16 +54,24 @@ begin
     returning *
     into a;
 
+    -- let table to inherit _search.item
+    --
     call search.set_type_inheritance(a);
+
+    -- trigger to populate _search.item param column
+    --
     call search.set_type_param_trigger(a);
+
+    -- update the search functions
+    --
     call search.replace_get_fs();
 end;
 $$;
 
--- ensure type inherits search_.item
+-- set inheritance to _search.item
 --
 create procedure search.set_type_inheritance (
-    t search_.type
+    t _search.type
 )
     language plpgsql
     security definer
@@ -69,13 +84,15 @@ begin
     )
     then
         execute format('
-            alter table %s inherit search_.item
+            alter table %s
+            inherit _search.item
         ', t.table_t);
     end if;
 end;
 $$;
 
--- trigger to set the param column
+
+-- trigger to update the param column
 --
 create function search.search_set_type_param_trigger()
     returns trigger
@@ -83,17 +100,20 @@ create function search.search_set_type_param_trigger()
     security definer
 as $$
 declare
-    t search_.type;
+    t _search.type;
 begin
+
     select ts.*
     into t
-    from search_.type ts
+    from _search.type ts
     where id = new.type;
 
 
     if t.id is not null
     then
-        execute format('select to_jsonb(%s($1))', t.param_f::regproc)
+        execute format(
+            'select to_jsonb(%s($1))',
+            t.param_f::regproc)
         using new
         into new.param;
     end if;
@@ -103,10 +123,10 @@ end;
 $$;
 
 
--- creates trigger on table
+-- apply trigger to populate param column
 --
 create procedure search.set_type_param_trigger (
-    t search_.type
+    t _search.type
 )
     language plpgsql
     security definer
