@@ -1,3 +1,7 @@
+\if :{?search_sql}
+\else
+\set search_sql true
+
 -- how to create an abstract search?
 -- supposed to have a set of products
 -- where each product has own attributes
@@ -29,3 +33,5 @@ create schema search;
 -- then to cast it for a match.
 -- why not directly access param column with jsonb operator?
 -- a preference, found it easier to use types and functions
+
+\endif
