@@ -1,3 +1,8 @@
+\if :{?search_replace_get_fs_sql}
+\else
+\set search_replace_get_fs_sql true
+
+
 -- search.get_item and search.to_jsonb are replaced base on
 -- _search.type as below:
 --
@@ -82,3 +87,4 @@ begin
 end;
 $$;
 
+\endif

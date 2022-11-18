@@ -1,3 +1,7 @@
+\if :{?search_set_type_sql}
+\else
+\set search_set_type_sql true
+
 -- registers a table to be searched on
 -- registers the various types and function pointers needed for type
 -- ensures inheritance
@@ -150,3 +154,4 @@ end;
 $$;
 
 
+\endif

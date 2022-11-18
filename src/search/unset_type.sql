@@ -1,3 +1,7 @@
+\if :{?search_unset_type_sql}
+\else
+\set search_unset_type_sql true
+
 -- unsets a type
 -- removes from inheritance
 -- removes the trigger
@@ -69,3 +73,5 @@ begin
     end if;
 end;
 $$;
+
+\endif

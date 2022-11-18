@@ -1,3 +1,7 @@
+\if :{?search_tests_car_sql}
+\else
+\set search_tests_car_sql true
+\if :test
 -- a car to inherit _search.item
 create table tests.car (
     brand text,
@@ -74,22 +78,6 @@ as $$
     ))
 $$;
 
--- register a car type
--- a trigger will be added to auto-build the param
---
-call search.set_type (
-    id_ => 'car',
 
-    table_t_ => 'tests.car'::regclass,
-    param_t_  =>'tests.car_param_t'::regtype,
-    match_it_ =>'tests.car_match_it'::regtype,
-
-    param_f_ =>'tests.get_param(tests.car)'::regprocedure,
-    match_f_ =>'tests.match(tests.car_param_t,tests.car_match_it)'::regprocedure,
-    jsonb_f_ =>'tests.to_jsonb(tests.car)'::regprocedure
-);
-
-insert into tests.car (type, brand, model, doors, msrp)
-values
-    ('car', 'honda', 'civic ', 3, 100),
-    ('car', 'honda', 'accord', 4, 200);
+\endif
+\endif

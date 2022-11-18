@@ -1,3 +1,8 @@
+\if :{?search_tests_book_sql}
+\else
+\set search_tests_book_sql true
+
+\if :test
 -- inherits _search.item
 --
 create table tests.book (
@@ -73,20 +78,6 @@ as $$
     ))
 $$;
 
--- register book type
---
-call search.set_type (
-    id_ => 'book',
 
-    table_t_ => 'tests.book'::regclass,
-    param_t_  =>'tests.book_param_t'::regtype,
-    match_it_ => 'tests.book_match_it'::regtype,
-    code_sch => 'tests'
-);
-
-
-insert into tests.book (type, title, price)
-values
-    ('book', 'cars and horses', 100),
-    ('book', 'code and cpus', 200);
-
+\endif
+\endif
