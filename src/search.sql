@@ -23,24 +23,31 @@ create schema search;
 create table if not exists _search.type (
     id text not null primary key,
 
-    table_t regclass,     -- actual item table
+    table_t text -- actual item table
+        check (to_regclass(table_t) is not null),
 
     -- to generate _search.item param jsonb column
     -- param_t can be a sub-set of table_t columns
     --
-    param_f regprocedure,
-    param_t regtype,
+    param_f text
+        check (to_regprocedure(param_f) is not null),
+    param_t text
+        check (to_regtype(param_t) is not null),
+
 
     -- search request payload (a jsonb) will be cast to match_it
     -- make match_f (param_t, match_it) as immutable for possible inlining
     --
-    match_it regtype,
-    match_f regprocedure,
+    match_it text
+        check (to_regtype(match_it) is not null),
+    match_f text
+        check (to_regprocedure(match_f) is not null),
 
     -- jsonb_f(table_t) is to transform table_t into jsonb
     -- a required step for uniform output
     --
-    jsonb_f regprocedure  -- jsonb_f(table_t) -> jsonb
+    jsonb_f text -- jsonb_f(table_t) -> jsonb
+        check (to_regprocedure(jsonb_f) is not null)
 );
 
 

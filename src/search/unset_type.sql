@@ -43,7 +43,7 @@ begin
     if exists (
         select 1
         from pg_inherits
-        where inhrelid = t.table_t
+        where inhrelid = to_regclass(t.table_t)
     )
     then
         execute format('
@@ -64,7 +64,7 @@ begin
     if exists (
         select 1
         from pg_trigger
-        where tgrelid = t.table_t
+        where tgrelid = to_regclass(t.table_t)
             and tgname = 'search_set_type_param_trigger'
     ) then
         execute format('

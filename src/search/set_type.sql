@@ -38,12 +38,30 @@ begin
     -- update or populate with existing
     --
     a.id = id_;
-    a.table_t = coalesce(table_t_, a.table_t, (data_sch || '.' || a.id )::regclass);
-    a.param_t = coalesce(param_t_, a.param_t, (code_sch || '.param_t')::regtype);
-    a.match_it = coalesce(match_it_, a.match_it, (code_sch || '.match_it')::regtype);
-    a.param_f = coalesce(param_f_, a.param_f, (code_sch || '.get_param(' || a.table_t || ')')::regprocedure);
-    a.match_f = coalesce(match_f_, a.match_f, (code_sch || '.match(' || a.param_t ||',' || a.match_it || ')')::regprocedure);
-    a.jsonb_f = coalesce(jsonb_f_, a.jsonb_f, (code_sch || '.to_jsonb(' || a.table_t || ')')::regprocedure);
+    a.table_t = coalesce(
+        table_t_,
+        to_regclass(a.table_t),
+        (data_sch || '.' || a.id )::regclass);
+    a.param_t = coalesce(
+        param_t_,
+        to_regtype(a.param_t),
+        (code_sch || '.param_t')::regtype);
+    a.match_it =
+        coalesce(match_it_,
+        to_regtype(a.match_it),
+        (code_sch || '.match_it')::regtype);
+    a.param_f = coalesce(
+        param_f_,
+        to_regprocedure(a.param_f),
+        (code_sch || '.get_param(' || a.table_t || ')')::regprocedure);
+    a.match_f = coalesce(
+        match_f_,
+        to_regprocedure(a.match_f),
+        (code_sch || '.match(' || a.param_t ||',' || a.match_it || ')')::regprocedure);
+    a.jsonb_f = coalesce(
+        jsonb_f_,
+        to_regprocedure(a.jsonb_f),
+        (code_sch || '.to_jsonb(' || a.table_t || ')')::regprocedure);
 
     -- insert or update
     --
@@ -84,7 +102,7 @@ begin
     if not exists (
         select 1
         from pg_inherits
-        where inhrelid = t.table_t
+        where inhrelid = to_regclass(t.table_t)
     )
     then
         execute format('
@@ -117,7 +135,7 @@ begin
     then
         execute format(
             'select to_jsonb(%s($1))',
-            t.param_f::regproc)
+            to_regprocedure(t.param_f)::regproc)
         using new
         into new.param;
     end if;
@@ -139,7 +157,7 @@ begin
     if not exists (
         select 1
         from pg_trigger
-        where tgrelid = t.table_t
+        where tgrelid = to_regclass(t.table_t)
             and tgname = 'search_set_type_param_trigger'
     ) then
         execute format('

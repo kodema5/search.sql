@@ -49,7 +49,7 @@ begin
                     jsonb_populate_record(null::%s, t.param),
                     jsonb_populate_record(null::%s, req)
                 )
-            )', t.id, t.match_f::regproc, t.param_t, t.match_it)),
+            )', t.id, t.match_f::regprocedure::regproc, t.param_t, t.match_it)),
             ' OR ')
         from _search.type t
     ));
@@ -79,7 +79,7 @@ begin
             then (
                 select %s(a) from %s a where a.id=i.id
             )
-        ', t.id, t.jsonb_f::regproc, t.table_t)),
+        ', t.id, t.jsonb_f::regprocedure::regproc, t.table_t)),
         '')
         from _search.type t
     ));
